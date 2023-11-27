@@ -99,3 +99,85 @@ DIAGNOSTICS - Reduce JavaScript execution time
 - Bottom-Up 탭 : 가장 최하위에 있는 작업부터 상위 작업까지 역순으로 보여줌
 - Call Tree 탭 : 가장 상위 작업부터 하위 작업 순으로 작업 내용을 트리뷰로 보여줌
 - Event Log 탭 : 발생한 이벤트를 보여줌
+
+<br/>
+
+# 2주차
+
+## 코드 분할(code Splitting)
+
+> 페이지에서 필요한 코드만 따로 로드하여 불필요한 코드를 로드하지 않게 함
+> <br/> **하나의 번들 파일을 여러 개의 파일로 쪼개는 방법**
+
+분할된 코드는 사용자가 서비스를 이용하는 중 해당 코드가 필요해지는 시점에 로드되어 실행됨
+→ **지연 로딩**
+
+```js
+// import 문의 기본 사용법
+// 이 방법의 해당 모듈은 빌드 시에 함께 번들링 된다.
+import { add } from "./math";
+
+console.log(`1 + 4 = ${add(1, 4)}`);
+```
+
+```js
+// 동적(dynamic) import
+// 빌드 시가 아닌 런타임에 해당 모듈을 로드한다.
+import("add").then((module) => {
+  const { add } = module;
+  console.log(`1 + 4 = ${add(1, 4)}`);
+});
+```
+
+- 동적 import 구문은 Promise 형태로 모듈을 반환하기 때문에, import 하려는 모듈이 컴포넌트라면 Promise 내부에서 로드된 컴포넌트를 Promise 밖으로 빼야함
+  → 리액트에선 lazy와 Suspense로 해결 가능
+
+```js
+import React, { Suspense } from "react";
+
+const SomeComponent = React.lazy(()= import("./SomeComponent"))
+
+function MyComponent(){
+  return (
+    <div>
+      <Suspense fallback={<div>Loading</div>}>
+        <SomeComponent />
+      </Suspense>
+    </div>
+  )
+}
+```
+
+lazy 함수는 동적 import를 호출하여 그 결과인 Promise를 반환하는 함수를 인자로 받음
+
+lazy 함수가 반환한 값(→ import한 컴포넌트)은 Suspense 안에서 렌더링해야 함
+
+동적 import를 하는 동안 SomeComponent가 아직 값을 갖지 못할 땐 fallback prop에 정의된 내용 렌더링, 이후 로드 완료 시 SomeComponent 렌더링
+
+## 텍스트 압축
+
+create-react-app의 경우 production 환경과 development 환경에 차이 존재<br/>
+→ production 환경일 때엔 webpack에서 경량화나 난독화 같은 추가적인 최적화 작업 실행
+
+각 환경에서 차이가 있으므로 최종 서비스의 성능 측정 시엔 production 환경으로 빌드된 서비스의 성능을 측정 해야 함
+
+**Enable text compression**
+서버로부터 리소스를 받을 때, 텍스트 압축을 해서 받아라
+
+HTML, CSS, JS는 텍스트 기반의 파일이기 때문에 텍스트 압축 기법을 적용할 수 있음
+
+- 파일을 압축하여 더 작은 크기로 빠르게 전송한 뒤, 사용하는 시점에 압축 해제
+- 압축 여부 확인은 HTTP 헤더 확인 (리소스가 gzip 방식으로 압축되어 전송되었다는 것을 의미)
+  ![Alt text](image-5.png)
+  - main 번들 파일에는 "Content-Encoding" 항목 존재 X → 이런 곳에 텍스트 압축 적용
+
+> **압축 방식(Gzip, Deflate)**<br/>
+> Deflate는 LZ77 알고리즘과 허프먼 코등을 사용하여 데이터를 감싸는 압축 방식<br/>
+> Gzip은 블록화, 휴리스틱 필터링, 헤더와 체크섬과 함께 내부적으로 Deflate를 사용하는 압축 방식<br/>
+> → 여러 기법이 추가되었기 때문에 Gzip은 Deflate를 단독으로 사용하는 것보다 더 좋은 압축률 제공
+
+```js
+"serve": "npm run build && node ./node_modules/serve/bin/serve.js -u -s build"
+// s 옵션 : SPA 서비스를 위해 매칭되지 않는 주소는 모두 index.html로 보냄
+// u 옵션 : 텍스트 압축을 하지 않음 (→ u 옵션 제거 후 다시 실행)
+```
