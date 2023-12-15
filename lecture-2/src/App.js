@@ -19,6 +19,10 @@ function App() {
   // 2. 컴포넌트의 마운트 완료 후
   useEffect(() => {
     const component = import("./components/ImageModal");
+
+    // 이미지 사전 로딩 기법 적용
+    const img = new Image();
+    img.src = "https://stillmed.olympic.org/media/Photos/2016/08/20/part-1/20-08-2016-Football-Men-01.jpg?interpolation=lanczos-none&resize=*:800";
   }, []);
 
   return (
