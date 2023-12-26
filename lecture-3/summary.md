@@ -52,3 +52,59 @@ observer.observe(document.querySelector("#target-element2"));
 `console.log("Entries", entries);` 결과
 
 - isIntersecting : 해당 요소가 뷰포트 내에 들어왔는지를 나타내는 값, 이 값을 통해 해당 요소가 화면에 보이는지 나갔는지 확인 가능
+
+## 이미지 사이즈 최적화
+
+이미지 지연로딩을 적용시킨 후 스크롤이 이미지 위치에 도달하는 순간 로드하기 때문에 이미지가 잘려 보일 수 있음
+
+![Alt text](image-1.png)
+
+이미지 사이즈가 크면 다운로드에 많은 시간이 걸려 이미지 사이즈 최적화가 필요<br/>
+
+> 이미지 사이즈 최적화 : 이미지의 사이즈를 줄여 이미지의 용량을 줄이고 그만큼 빠르게 다운로드하는 기법
+
+### 이미지 포맷 종류
+
+- **PNG**
+  - 무손실 압축 방식으로 원본을 훼손 없이 압축하여 알파 채널을 지원
+  - 알파 채널 → 투명도
+  - PNG 포맷으로 배경 색을 투명하게 하여 뒤에 있는 요소가 보이는 이미지를 만들 수 있음
+- **JPG**
+  - 압축 과정에서 정보 손실 발생
+  - 하지만 그만큼 이미지를 더 작은 사이즈로 줄일 수 있음
+  - 일반적으로 웹에서 이미지를 사용할 때, 고화질이어야 하거나 투명도 정보가 필요하지 않으면 JPG 사용
+- **WebP**
+  - 무손실 압축과 손실 압축을 모두 제공하는 최신 이미지 포맷
+  - 기존 PNG나 JPG에 비해 효율적으로 이미지 압축 가능
+  - 최신 이미지 파일 포맷이기 때문에 브라우저 호환성을 고려 해야함
+
+https://squoosh.app/ 에서 이미지 변환
+
+![Alt text](image-2.png)
+
+![Alt text](image-3.png)
+
+### WebP의 호환성 문제
+
+![Alt text](image-4.png)
+
+WebP 로만 이미지를 렌더링할 경우 특정 브라우저에서는 제대로 렌더링이 되지 않을 수 있음<br/>
+→ 단순 `<img />` 태그가 아닌 `<picture />` 태그를 사용<br/>
+
+`<picture />` 태그는 다양한 타입의 이미지를 렌더링하는 컨테이너로 사용
+
+```html
+# 뷰포트로 구분
+<picture>
+  <source media="(min-width:650px)" srcset="img_pink_flowers.jpg" />
+  <source media="(min-width:465px)" srcset="img_white_flower.jpg" />
+  <img src="img_orange_flowers.jpg" alt="Flowers" style="width:auto;" />
+</picture>
+
+# 이미지 포맷으로 구분
+<picture>
+  <source srcset="photo.avif" type="image/avif" />
+  <source srcset="photo.webp" type="image/webp" />
+  <img src="photo.jpg" alt="photo" />
+</picture>
+```

@@ -33,9 +33,13 @@ function Card(props) {
   return (
     <div className="Card text-center">
       {/* <img img={props.image} ref={imgRef} /> */}
-      {/* data-src에 이미지 주소(props.image)를 넣게 되면 src 값이 할당되지 않기 때문에 해당 이미지를 로드하지 않음 */}
-      {/* 나중에 이미지가 뷰포트에 들어왔을 때 data-src에 있는 값을 src로 옮겨 이미지 로드 */}
-      <img data-src={props.image} ref={imgRef} />
+      {/* 가장 상위에 있는 WebP를 우선으로 로드하고, 브라우저가 WebP를 지원하지 않으면 img 태그에 있는 JPG 이미지를 렌더링 */}
+      <picture>
+        <source data-srcset={props.webp} type="image/webp" />
+        {/* data-src에 이미지 주소(props.image)를 넣게 되면 src 값이 할당되지 않기 때문에 해당 이미지를 로드하지 않음 */}
+        {/* 나중에 이미지가 뷰포트에 들어왔을 때 data-src에 있는 값을 src로 옮겨 이미지 로드 */}
+        <img data-src={props.image} ref={imgRef} />
+      </picture>
       <div className="p-5 font-semibold text-gray-700 text-xl md:text-lg lg:text-xl keep-all">{props.children}</div>
     </div>
   );
