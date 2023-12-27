@@ -14,11 +14,22 @@ function Card(props) {
 
     // 화면에 이미지가 보이는 순간(콜백 실행 순간) 이미지 로드하기
     const callback = (entries, observer) => {
+      // entries.forEach((entry) => {
+      //   if (entry.isIntersecting) {
+      //     console.log("is intersection", entry.target.dataset.src);
+      //     entry.target.src = entry.target.dataset.src;
+      //     observer.unobserve(entry.target); // 해당 요소의 observe 해제 (한 번 이미지를 로드한 후에는 다시 호출할 필요 X)
+      //   }
+      // });
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          console.log("is intersection", entry.target.dataset.src);
-          entry.target.src = entry.target.dataset.src;
-          observer.unobserve(entry.target); // 해당 요소의 observe 해제 (한 번 이미지를 로드한 후에는 다시 호출할 필요 X)
+          const target = entry.target;
+          const previousSibling = target.previousSibling;
+
+          console.log("is intersecting", target.dataset.src);
+          previousSibling.srcset = previousSibling.dataset.srcset;
+          target.src = target.dataset.src;
+          observer.unobserve(target);
         }
       });
     };

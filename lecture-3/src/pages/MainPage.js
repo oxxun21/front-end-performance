@@ -22,22 +22,45 @@ function MainPage(props) {
   const imgEl2 = useRef(null);
   const imgEl3 = useRef(null);
 
+  // useEffect(() => {
+  //   const options = {};
+
+  //   const callback = (entries, observer) => {
+  //     entries.forEach((entry) => {
+  //       if (entry.isIntersecting) {
+  //         // console.log(entry.target.dataset.src);
+  //         const sourceEl = entry.target.previousSibling;
+  //         sourceEl.srcser = sourceEl.dataset.srcset;
+  //         entry.target.src = entry.target.dataset.src;
+  //         observer.unobserve(entry.target);
+  //       }
+  //     });
+  //   };
+
+  //   let observer = new IntersectionObserver(callback, options);
+  //   observer.observe(imgEl1.current);
+  //   observer.observe(imgEl2.current);
+  //   observer.observe(imgEl3.current);
+
+  //   return () => observer.disconnect();
+  // }, []);
+
   useEffect(() => {
     const options = {};
-
     const callback = (entries, observer) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // console.log(entry.target.dataset.src);
-          const sourceEl = entry.target.previousSibling;
-          sourceEl.srcser = sourceEl.dataset.srcset;
-          entry.target.src = entry.target.dataset.src;
-          observer.unobserve(entry.target);
+          const target = entry.target;
+          const previousSibling = target.previousSibling;
+
+          console.log("is intersecting", target.dataset.src);
+          previousSibling.srcset = previousSibling.dataset.srcset;
+          target.src = target.dataset.src;
+          observer.unobserve(target);
         }
       });
     };
-
-    let observer = new IntersectionObserver(callback, options);
+    const observer = new IntersectionObserver(callback, options);
     observer.observe(imgEl1.current);
     observer.observe(imgEl2.current);
     observer.observe(imgEl3.current);
