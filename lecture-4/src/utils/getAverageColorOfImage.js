@@ -32,5 +32,8 @@ export function getAverageColorOfImage(imgElement) {
   averageColor.g = ~~(averageColor.g / count);
   averageColor.b = ~~(averageColor.b / count);
 
+  // 메모이제이션
+  Cache[imgElement.src] = averageColor;
+
   return averageColor;
 }
